@@ -14,12 +14,12 @@ struct Node {
 
 class DataStructure {
 public:
-  ~DataStructure() { delete shared; }
+  ~DataStructure() { delete head; }
 
   void read() {
     std::shared_lock lock(mtx);
     std::this_thread::sleep_for(300ms);
-    std::cout << "v is: '" << shared->v << "'\n";
+    std::cout << "v is: '" << head->v << "'\n";
   }
 
   void write(int i) {
@@ -27,13 +27,13 @@ public:
     auto *newN = new Node(i);
     {
       std::unique_lock lock(mtx);
-      oldN = std::exchange(shared, newN);
+      oldN = std::exchange(head, newN);
     }
     delete oldN;
   }
 
 private:
-  Node *shared = new Node(9001);
+  Node *head = new Node(9001);
   std::shared_mutex mtx;
 };
 

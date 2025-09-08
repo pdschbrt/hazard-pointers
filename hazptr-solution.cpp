@@ -14,23 +14,23 @@ struct Node : folly::hazptr_obj_base<Node> {
 
 class DataStructure {
 public:
-  ~DataStructure() { shared.load(std::memory_order_relaxed)->retire(); }
+  ~DataStructure() { delete head.load(); }
 
   void read() {
     folly::hazptr_holder hptr = folly::make_hazard_pointer();
-    auto *n = hptr.protect(shared);
+    auto *n = hptr.protect(head);
     std::this_thread::sleep_for(300ms);
     std::cout << "v is: '" << n->v << "'\n";
   }
 
   void write(int i) {
     auto *newN = new Node(i);
-    auto *oldN = shared.exchange(newN, std::memory_order_relaxed);
+    auto *oldN = head.exchange(newN);
     oldN->retire();
   }
 
 private:
-  std::atomic<Node *> shared = new Node(9001);
+  std::atomic<Node *> head{new Node(9001)};
 };
 
 int main() {

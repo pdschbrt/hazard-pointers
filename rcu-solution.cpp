@@ -15,23 +15,23 @@ struct Node {
 
 class DataStructure {
 public:
-  ~DataStructure() { delete shared.load(); }
+  ~DataStructure() { delete head.load(); }
 
   void read() {
     std::scoped_lock lock(folly::rcu_default_domain());
-    auto *n = shared.load();
+    auto *n = head.load();
     std::this_thread::sleep_for(300ms);
     std::cout << "v is: '" << n->v << "'\n";
   }
 
   void write(int i) {
     auto *newN = new Node(i);
-    auto *oldN = shared.exchange(newN);
+    auto *oldN = head.exchange(newN);
     folly::rcu_retire(oldN);
   }
 
 private:
-  std::atomic<Node *> shared{new Node(9001)};
+  std::atomic<Node *> head{new Node(9001)};
 };
 
 int main() {

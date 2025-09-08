@@ -14,18 +14,18 @@ struct Node {
 class DataStructure {
 public:
   void read() {
-    auto n = shared.load();
+    auto n = head.load();
     std::this_thread::sleep_for(300ms);
     std::cout << "v is: '" << n->v << "'\n";
   }
 
   void write(int i) {
     auto newN = std::make_shared<Node>(i);
-    shared.exchange(newN);
+    head.exchange(newN);
   }
 
 private:
-  std::atomic<std::shared_ptr<Node>> shared{std::make_shared<Node>(9001)};
+  std::atomic<std::shared_ptr<Node>> head{std::make_shared<Node>(9001)};
 };
 
 int main() {
