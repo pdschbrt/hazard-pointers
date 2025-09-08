@@ -20,7 +20,7 @@ public:
     std::cout << "v is: '" << n->v << "'\n";
   }
 
-  void update(int i) {
+  void write(int i) {
     auto *newN = new Node(i);
     auto *oldN = shared.exchange(newN);
     delete oldN;
@@ -36,7 +36,7 @@ int main() {
   for (int i = 0; i < 20; ++i) {
     threads.emplace_back([&d]() { d.read(); });
     if (i % 5 == 0) {
-      threads.emplace_back([&d, i]() { d.update(i); });
+      threads.emplace_back([&d, i]() { d.write(i); });
     }
   }
   return 0;
