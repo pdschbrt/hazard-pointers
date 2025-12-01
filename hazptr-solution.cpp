@@ -14,7 +14,7 @@ struct Node : folly::hazptr_obj_base<Node> {
 
 class DataStructure {
 public:
-  ~DataStructure() { delete head.load(); }
+  ~DataStructure() { delete head.load(std::memory_order_relaxed); }
 
   void read() {
     folly::hazptr_holder hptr = folly::make_hazard_pointer();
@@ -25,7 +25,7 @@ public:
 
   void write(int i) {
     auto *newN = new Node(i);
-    auto *oldN = head.exchange(newN);
+    auto *oldN = head.exchange(newN, std::memory_order_acq_rel);
     oldN->retire();
   }
 

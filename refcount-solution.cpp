@@ -14,14 +14,14 @@ struct Node {
 class DataStructure {
 public:
   void read() {
-    auto n = head.load();
+    auto n = head.load(std::memory_order_acquire);
     std::this_thread::sleep_for(300ms);
     std::cout << "v is: '" << n->v << "'\n";
   }
 
   void write(int i) {
     auto newN = std::make_shared<Node>(i);
-    head.exchange(newN);
+    head.exchange(newN, std::memory_order_acq_rel);
   }
 
 private:

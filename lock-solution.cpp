@@ -40,7 +40,7 @@ private:
 int main() {
   DataStructure d;
   std::vector<std::jthread> threads;
-  for (int i = 0; i < 20; ++i) {
+  for (int i = 0; i < 2000; ++i) {
     threads.emplace_back([&d]() { d.read(); });
     if (i % 5 == 0) {
       threads.emplace_back([&d, i]() { d.write(i); });

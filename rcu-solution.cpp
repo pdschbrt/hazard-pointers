@@ -15,18 +15,18 @@ struct Node {
 
 class DataStructure {
 public:
-  ~DataStructure() { delete head.load(); }
+  ~DataStructure() { delete head.load(std::memory_order_relaxed); }
 
   void read() {
     std::scoped_lock lock(folly::rcu_default_domain());
-    auto *n = head.load();
+    auto *n = head.load(std::memory_order_acquire);
     std::this_thread::sleep_for(300ms);
     std::cout << "v is: '" << n->v << "'\n";
   }
 
   void write(int i) {
     auto *newN = new Node(i);
-    auto *oldN = head.exchange(newN);
+    auto *oldN = head.exchange(newN, std::memory_order_acq_rel);
     folly::rcu_retire(oldN);
   }
 
